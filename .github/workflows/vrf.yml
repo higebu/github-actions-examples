@@ -1,0 +1,25 @@
+name: use vrf
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install linux-modules-extra
+        run: |
+          sudo apt-get install linux-modules-extra-$(uname -r)
+      - run: |
+          sudo ls -l /lib/modules/$(uname -r)/kernel/drivers/net/
+      - run: modinfo vrf
+      - name: Create vrf
+        run: |
+          sudo ip link add vrf1 type vrf table 1000
+          sudo ip link set dev vrf1 up
